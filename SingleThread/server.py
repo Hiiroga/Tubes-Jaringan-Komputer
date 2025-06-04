@@ -1,5 +1,6 @@
 import socket
 import os
+import time  # Untuk simulasi delay
 
 HOST = '0.0.0.0'
 PORT = 6789
@@ -23,6 +24,10 @@ def handle_client(client_socket, client_address):
                 response = "HTTP/1.1 404 Not Found\r\n\r\n404 File Not Found"
                 client_socket.sendall(response.encode())
             else:
+                print("[DEBUG] Delay 3 detik dimulai...")
+                time.sleep(3) 
+                print("[DEBUG] Delay selesai. Mengirim file.")
+
                 with open(filename, 'rb') as f:
                     content = f.read()
 
@@ -44,6 +49,7 @@ def handle_client(client_socket, client_address):
 def main():
     print("[*] Server SINGLE THREAD sedang berjalan")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server_socket.bind((HOST, PORT))
         server_socket.listen(1)
         print(f"[*] Listening di {HOST}:{PORT}")
